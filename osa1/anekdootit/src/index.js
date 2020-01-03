@@ -10,19 +10,28 @@ const Button = (props) => (
 const App = (props) => {
   const [selected, setSelected] = useState(0)
 
-
-  
   const randomAnecdote = () => {
-
     setSelected(Math.floor(Math.random()*anecdotes.length))
   }
 
+  // this isn't working
+  const voteThis = () => {
+    const copy = [...points]
+    copy[selected] += 1
+  }
 
+  const points = [1, 4, 6, 3]
+
+  const copy = [...points]
+  // kasvatetaan taulukon paikan 2 arvoa yhdellä
+  copy[2] += 1     
+  
 
   return (
     <div>
       <p>{props.anecdotes[selected]}</p>
-      <Button handleClick={() => randomAnecdote()} text="random anecdote" />
+      <Button handleClick={() => voteThis()} text="vote" />
+      <Button handleClick={() => randomAnecdote()} text="next anecdote" />
     </div>
     )
 }
