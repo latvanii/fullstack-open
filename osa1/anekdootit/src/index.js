@@ -14,24 +14,23 @@ const App = (props) => {
     setSelected(Math.floor(Math.random()*anecdotes.length))
   }
 
-  // this isn't working
   const voteThis = () => {
-    const copy = [...points]
-    copy[selected] += 1
+    setVote([
+        ...votes.slice(0, selected),
+        votes[selected] + 1,
+        ...votes.slice(selected+1, votes.length)
+    ]);
   }
 
-  const points = [1, 4, 6, 3]
-
-  const copy = [...points]
-  // kasvatetaan taulukon paikan 2 arvoa yhdellä
-  copy[2] += 1     
-  
+  const [votes, setVote] = useState(new Uint8Array(props.anecdotes.length))
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{props.anecdotes[selected]}</p>
       <Button handleClick={() => voteThis()} text="vote" />
       <Button handleClick={() => randomAnecdote()} text="next anecdote" />
+      <p>Votes: {votes[selected]}</p>
     </div>
     )
 }
