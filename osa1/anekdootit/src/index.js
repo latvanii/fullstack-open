@@ -7,6 +7,15 @@ const Button = (props) => (
     </button>
   )  
 
+const MostVoted = ({votes, anecdotes, i}) => {
+    if (Math.max(...votes)===0) {
+        return (
+            <p>No votes given</p>
+        )
+    }
+    return (<p>Most voted: {anecdotes[i]} ({votes[i]} votes)</p>)
+}
+
 const App = (props) => {
   const [selected, setSelected] = useState(0)
 
@@ -23,6 +32,8 @@ const App = (props) => {
   }
 
   const [votes, setVote] = useState(new Uint8Array(props.anecdotes.length))
+  const i = votes.indexOf(Math.max(...votes));
+
 
   return (
     <div>
@@ -31,6 +42,7 @@ const App = (props) => {
       <Button handleClick={() => voteThis()} text="vote" />
       <Button handleClick={() => randomAnecdote()} text="next anecdote" />
       <p>Votes: {votes[selected]}</p>
+      <MostVoted votes={votes} anecdotes={anecdotes} i={i} />
     </div>
     )
 }
