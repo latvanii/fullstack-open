@@ -1,12 +1,52 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+
+
+const NewPersonForm = ({handleNameChange, handleNumberChange, addPerson}) => {
+  return (
+    <form onSubmit={addPerson}>
+      <div>name: <input 
+        onChange={handleNameChange} 
+        />
+      </div>
+      <div>number: <input 
+        onChange={handleNumberChange} 
+      />
+      </div>
+      <button type="submit">add</button>
+    </form>
+
+  )
+}
+
+const SearchForm = ({ handleSearchTermChange }) => {
+  return (
+    <form>
+    <div>searching: <input
+      onChange={handleSearchTermChange}
+      />
+    </div>
+  </form>
+  )
+}
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+
+  const [persons, setPersons] = useState([])
+
+
+  const hook = () => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }
+  
+  useEffect(hook, [])
+
 
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
@@ -64,28 +104,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-
-      <form onSubmit={addPerson}>
-        <div>name: <input 
-          value={newName} 
-          onChange={handleNameChange} 
-          />
-        </div>
-        <div>number: <input 
-          value={newNumber} 
-          onChange={handleNumberChange} 
-        />
-        </div>
-        <button type="submit">add</button>
-      </form>
+      <NewPersonForm handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} addPerson={addPerson} />
       <h2>Numbers</h2>
-      <form>
-        <div>search: <input
-          value={newSearchTerm}
-          onChange={handleSearchTermChange}
-          />
-        </div>
-      </form>
+      <SearchForm handleSearchTermChange={handleSearchTermChange}/>
       <Persons />
       
     </div>
