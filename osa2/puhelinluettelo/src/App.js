@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 const App = () => {
   const [ persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas' , id: 1}
   ]) 
   const [ newName, setNewName ] = useState('')
 
@@ -15,7 +15,6 @@ const App = () => {
   
     setPersons(persons.concat(personObject))
     setNewName('')
-    console.log(persons)
   }
   
 
@@ -23,7 +22,18 @@ const App = () => {
     setNewName(event.target.value)
   }
 
+  const PersonRow = (props) => {
+    return(
+    <div> name: {props.name}</div>
+    )
+  }
 
+  const persons_to_show = () => persons.map(person =>
+        <PersonRow 
+            key={person.name}
+            name={person.name}
+        />
+    )
 
   return (
     <div>
@@ -36,9 +46,9 @@ const App = () => {
         
           <button type="submit">add</button>
       </form>
-      <div>debug: {newName}</div>
       <h2>Numbers</h2>
-      {/*TODO */}
+      {persons_to_show()}
+      
     </div>
   )
 
