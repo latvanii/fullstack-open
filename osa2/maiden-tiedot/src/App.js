@@ -15,6 +15,7 @@ const SearchForm = ({ handleSearchTermChange }) => {
 const App = () => {
 
   const [countries, setCountries] = useState([])
+  const [countriesToShow, setCountriesToShow] = useState([])
 
 
   const hook = () => {
@@ -36,9 +37,49 @@ const App = () => {
     setSearchTerm(event.target.value)
   }
 
-  const CountryRow = (props) => {
+  const addToCountriesToShow = (name) => {
+    if(countriesToShow.includes(name)){
+      var array = [...countriesToShow]; // make a separate copy of the array
+      var index = array.indexOf(name)
+      if (index !== -1) {
+        array.splice(index, 1);
+        setCountriesToShow(array);
+      }
+    
+    }
+    else{
+      setCountriesToShow(countriesToShow.concat(name))
+    }
+  }
+
+  const ShowButton = (props) => {
+    const name = props.name
     return(
-    <div> {props.name}</div>
+      <button onClick={() => addToCountriesToShow(name)}>
+        {countriesToShow.includes(name) ? 'hide' : 'show'}
+      </button>
+    )
+  }
+
+
+  const CountryRow = ({country}) => {
+    return(
+    <div> 
+      {country.name} <ShowButton name={country.name}/>
+      {countriesToShow.includes(country.name) &&
+        <CountryAllData country={country} />
+      }
+    </div>
+    )
+  }
+
+  const ShowLanguages = ({country}) => {
+  const languages = country.languages.map((lang, index) => <li key={index}> {lang.name}</li>)
+    return(
+      <div>
+        <h3>languages</h3>
+        {languages}
+      </div>
     )
   }
 
@@ -48,11 +89,11 @@ const App = () => {
           <h2>{country.name}</h2>
           <div>capital: {country.capital}</div>
           <div>population: {country.population}</div>
-          <h3>languages</h3>
-          <div>{country.languages.map(lang => <div>{lang.name}</div>)}</div>
+          <ShowLanguages country={country}/>
           <img 
               src={country.flag}
               width='200'
+              alt='flag'
           />
 
       </div>
@@ -69,24 +110,26 @@ const App = () => {
 
     if(filtered_countries.length > 1){
         return(
-            filtered_countries.map(country =>
+            filtered_countries.map((country, index) =>
             <CountryRow 
-                key={country.numericCode}
-                name={country.name}
+                key={index}
+                country={country}
             />
             )
         )
     }
     if(filtered_countries.length === 1){
         return(
-            filtered_countries.map(country =>
+            filtered_countries.map((country, index) =>
             <CountryAllData 
-                key={country.numericCode}
+                key={index}
                 country={country}
             />
             )
         )
     }
+
+
     
     return (<div>No countries found</div>)
 
@@ -99,8 +142,7 @@ const App = () => {
     <div>
       <h2>Countries</h2>
       <SearchForm handleSearchTermChange={handleSearchTermChange}/>
-      <ShowCountries />
-      
+      <ShowCountries/>      
     </div>
   )
 
