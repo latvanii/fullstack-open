@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import { weather_api_key } from './secrets.json'; // Relative path to your File
 
 const SearchForm = ({ handleSearchTermChange }) => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
 
   const [countries, setCountries] = useState([])
   const [countriesToShow, setCountriesToShow] = useState([])
+  const [weather, setWeather] = useState([])
 
 
   const hook = () => {
@@ -39,7 +41,7 @@ const App = () => {
 
   const addToCountriesToShow = (name) => {
     if(countriesToShow.includes(name)){
-      var array = [...countriesToShow]; // make a separate copy of the array
+      var array = [...countriesToShow]; 
       var index = array.indexOf(name)
       if (index !== -1) {
         array.splice(index, 1);
@@ -95,9 +97,54 @@ const App = () => {
               width='200'
               alt='flag'
           />
+          <ShowWeather name = {country.capital}/>
 
       </div>
       )
+  }
+
+
+
+  const addWeather = (city) => {
+    const existing_cities = weather.map(w => w.city)
+
+    if (existing_cities.includes(city)){
+      console.log(`${city} is already fetched`)
+      return
+    }
+    axios
+      .get(`http://api.weatherstack.com/current?access_key=${weather_api_key}&query=${city}`)
+      .then(response => {
+        const new_weather = {
+          city: city,
+          current_weather: response.data.current
+        }
+      setWeather(weather.concat(new_weather))
+      console.log(`got weather for ${city}`)
+    })
+  }
+
+  const getCurrentWeather = (city) => {
+    const cityWeather = weather.filter(w => w.city ===city)
+    console.log(cityWeather)
+    return cityWeather
+  }
+
+  const ShowWeather = ({name}) => {
+    addWeather(name)
+    const currentWeather = getCurrentWeather(name)
+    if (currentWeather.length !==1){
+      return(
+        <div></div>
+      )
+    }
+    const localWeather = currentWeather[0].current_weather
+    return (
+    <div>
+      Current temperature in {name}: {localWeather.temperature} °C
+    </div>
+    )
+
   }
 
   const ShowCountries = () => {
@@ -118,6 +165,7 @@ const App = () => {
             )
         )
     }
+
     if(filtered_countries.length === 1){
         return(
             filtered_countries.map((country, index) =>
@@ -129,13 +177,7 @@ const App = () => {
         )
     }
 
-
-    
     return (<div>No countries found</div>)
-
-
-
-    
   }
 
   return (
