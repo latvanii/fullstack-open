@@ -45,10 +45,29 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [ newSearchTerm, setSearchTerm ] = useState('')
 
+  const findByName = (name) => {
+    const filtered_persons = persons.filter(person => person.name===name)
+    return filtered_persons[0]
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
     if(persons.map(person => person.name).includes(newName)){
-      window.alert(`${newName} is already added to phonebook`)
+      const result = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      if(result){
+        const person_to_be_replaced = findByName(newName)
+        person_to_be_replaced.number = newNumber
+        personService
+          .update(person_to_be_replaced)
+          .then(data => {
+            personService
+              .getAll()
+              .then(initialPersons => setPersons(initialPersons))
+            setNewName('')
+            setNewNumber('')
+          })
+
+      }
       return
     }
     const personObject = {
@@ -79,9 +98,27 @@ const App = () => {
     setSearchTerm(event.target.value)
   }
 
+  const removePerson = (person_id, name) => {
+    const result = window.confirm(`Remove person ${name}`)
+    if(result){
+      personService
+      .deletePerson(person_id)
+      .then( data => {
+        console.log('removed')
+        console.log(data)
+        personService
+          .getAll()
+          .then(initialPersons => setPersons(initialPersons))
+      }
+      )
+    }
+  }
+
   const PersonRow = (props) => {
     return(
-    <div> {props.name}: {props.number}</div>
+    <div> 
+      {props.name}: {props.number} <button onClick={() => removePerson(props.id, props.name)}>remove</button>
+    </div>
     )
   }
 
@@ -93,6 +130,7 @@ const App = () => {
             key={person.name}
             name={person.name}
             number={person.number}
+            id={person.id}
         />
     )
     )
