@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons' 
+import Notification from './components/notification'
 
 const NewPersonForm = ({handleNameChange, handleNumberChange, addPerson}) => {
   return (
@@ -44,6 +45,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newSearchTerm, setSearchTerm ] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
+
 
   const findByName = (name) => {
     const filtered_persons = persons.filter(person => person.name===name)
@@ -65,6 +68,10 @@ const App = () => {
               .then(initialPersons => setPersons(initialPersons))
             setNewName('')
             setNewNumber('')
+            setNotificationMessage(`Number of ${newName} updated successfully`)
+          })
+          .catch(error => {
+            console.log('fail')
           })
 
       }
@@ -82,6 +89,10 @@ const App = () => {
         setPersons(persons.concat(data))
         setNewName('')
         setNewNumber('')
+        setNotificationMessage(`${newName} added successfully`)
+      })
+      .catch(error => {
+        console.log('fail')
       })
   }
   
@@ -109,6 +120,7 @@ const App = () => {
         personService
           .getAll()
           .then(initialPersons => setPersons(initialPersons))
+          setNotificationMessage(`${name} removed successfully`)
       }
       )
     }
@@ -121,6 +133,7 @@ const App = () => {
     </div>
     )
   }
+
 
   const Persons = () => {
     const filtered_persons = persons.filter(person => person.name.toLowerCase().includes(newSearchTerm.toLowerCase()))
@@ -138,6 +151,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={notificationMessage} />
       <h2>Phonebook</h2>
       <NewPersonForm handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} addPerson={addPerson} />
       <h2>Numbers</h2>
