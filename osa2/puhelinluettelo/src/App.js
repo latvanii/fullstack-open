@@ -46,7 +46,7 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [ newSearchTerm, setSearchTerm ] = useState('')
   const [notificationMessage, setNotificationMessage] = useState(null)
-
+  const [notificationMessageIsError, setNotificationMessageIsError] = useState(null)
 
   const findByName = (name) => {
     const filtered_persons = persons.filter(person => person.name===name)
@@ -69,17 +69,22 @@ const App = () => {
             setNewName('')
             setNewNumber('')
             setNotificationMessage(`Number of ${newName} updated successfully`)
+            setNotificationMessageIsError(false)
           })
           .catch(error => {
-            console.log('fail')
+            setNotificationMessage(`There was a problem in adding ${newName} to phonebook`)
+            setNotificationMessageIsError(true)          
           })
 
       }
       return
     }
+
+    const max_id = Math.max(persons.map(person => person.id))
+
     const personObject = {
       name: newName,
-      id: persons.length + 1,
+      id: max_id - 1,
       number: newNumber
     }
     
@@ -90,9 +95,13 @@ const App = () => {
         setNewName('')
         setNewNumber('')
         setNotificationMessage(`${newName} added successfully`)
+        setNotificationMessageIsError(false)
       })
       .catch(error => {
+        console.log(error)
         console.log('fail')
+        setNotificationMessage(`There was a problem in adding ${newName} to phonebook`)
+        setNotificationMessageIsError(true)
       })
   }
   
@@ -121,6 +130,7 @@ const App = () => {
           .getAll()
           .then(initialPersons => setPersons(initialPersons))
           setNotificationMessage(`${name} removed successfully`)
+          setNotificationMessageIsError(false)
       }
       )
     }
@@ -151,7 +161,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={notificationMessage} />
+      <Notification message={notificationMessage} isError = {notificationMessageIsError} />
       <h2>Phonebook</h2>
       <NewPersonForm handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} addPerson={addPerson} />
       <h2>Numbers</h2>
