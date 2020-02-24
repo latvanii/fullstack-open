@@ -1,8 +1,7 @@
 const express = require('express')
 const app = express()
 
-let persons = {
-    "persons": [
+let persons = [
         {
             "name": "Arto Hellas",
             "number": "040-123456",
@@ -24,7 +23,6 @@ let persons = {
             "id": 4
         }
     ]
-}
 
 
 app.get('/', (req, res) => {
@@ -35,9 +33,21 @@ app.get('/api/persons', (req, res) => {
     res.json(persons)
 })
 
+app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    const person = persons.find(person => person.id === id)
+
+    if (person) {
+        response.json(person)
+    } else {
+        response.status(404).end()
+    }
+})
+
 app.get('/info', (req, res) => {
-    let n_keys = Object.keys(persons.persons).length
-    res.send(`<p>Phonebook has info for ${n_keys} people</p><p>${new Date().toLocaleTimeString('en-us', { timeZoneName: 'short' })}</p>`)
+    let n_keys = Object.keys(persons).length
+    let timestamp = new Date().toLocaleTimeString('en-us', { timeZoneName: 'short' })
+    res.send(`<p>Phonebook has info for ${n_keys} people</p><p>${timestamp}</p>`)
 })
 
 const PORT = 3001
